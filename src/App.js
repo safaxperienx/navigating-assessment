@@ -519,7 +519,7 @@ saveToGoogleSheet(name.trim(), trimmed, (areas || []).join('|'), t.label, r.over
           )}
           <button
             onClick={handleEmailSubmit}
-            disabled={submitting}
+            disabled={false}
             onMouseEnter={e => { if (!submitting) e.target.style.background = "#c87840"; }}
             onMouseLeave={e => { if (!submitting) e.target.style.background = "#1a1510"; }}
             style={{
@@ -531,13 +531,13 @@ saveToGoogleSheet(name.trim(), trimmed, (areas || []).join('|'), t.label, r.over
               fontSize: 11,
               letterSpacing: "0.3em",
               textTransform: "uppercase",
-              cursor: submitting ? "not-allowed" : "pointer",
+              cursor: "pointer",
               fontFamily: "'Georgia', serif",
               transition: "background 0.2s",
               marginTop: 8,
             }}
           >
-            {submitting ? "One moment..." : "See my results"}
+            See my results
           </button>
 
         </div>
