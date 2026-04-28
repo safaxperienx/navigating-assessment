@@ -311,7 +311,7 @@ export default function App() {
     subscribeToMailchimp(trimmed);
     const r = computeResults(answers);
     const t = getTemperature(r.overall);
-    saveToGoogleSheet(name.trim(), trimmed, areas.areas || []).join('|'), t.label, r.overall, r.scores);
+saveToGoogleSheet(name.trim(), trimmed, (areas || []).join('|'), t.label, r.overall, r.scores);
     setPhase("results");
   }
 
