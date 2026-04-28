@@ -54,10 +54,10 @@ function saveToGoogleSheet(name, email, areas, temperature, overallScore, scores
     "seeingPossibilities=" + Math.round((scores.find(s => s.id === 12) || {}).pct || 0),
     "creating=" + Math.round((scores.find(s => s.id === 13) || {}).pct || 0),
   ].join("&");
-  fetch(GOOGLE_SHEET_URL + "?" + params, {
-    method: "GET",
-    mode: "no-cors",
-    redirect: "follow",
+  fetch("/api/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   }).catch(() => {});
 }
 
