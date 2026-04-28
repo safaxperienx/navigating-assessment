@@ -33,27 +33,27 @@ function subscribeToMailchimp(email) {
 }
 
 
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyySbTw8UbewmCgBeOcOVcSG79XTrDrbeMlpr-UP0ejoSOkvsZsRewTjQCTpO9U_mssPA/exec";
-
 function saveToGoogleSheet(name, email, areas, temperature, overallScore, scores) {
-  const params = [
-    "email=" + encodeURIComponent(email),
-    "temperature=" + encodeURIComponent(temperature),
-    "overallScore=" + Math.round(overallScore),
-    "owning=" + Math.round((scores.find(s => s.id === 1) || {}).pct || 0),
-    "aliveness=" + Math.round((scores.find(s => s.id === 2) || {}).pct || 0),
-    "naming=" + Math.round((scores.find(s => s.id === 3) || {}).pct || 0),
-    "lettingGo=" + Math.round((scores.find(s => s.id === 4) || {}).pct || 0),
-    "holdingParadoxes=" + Math.round((scores.find(s => s.id === 5) || {}).pct || 0),
-    "creatingAgreements=" + Math.round((scores.find(s => s.id === 6) || {}).pct || 0),
-    "gettingSupport=" + Math.round((scores.find(s => s.id === 7) || {}).pct || 0),
-    "antifragility=" + Math.round((scores.find(s => s.id === 8) || {}).pct || 0),
-    "playingWithLife=" + Math.round((scores.find(s => s.id === 9) || {}).pct || 0),
-    "commitment=" + Math.round((scores.find(s => s.id === 10) || {}).pct || 0),
-    "askingQuestions=" + Math.round((scores.find(s => s.id === 11) || {}).pct || 0),
-    "seeingPossibilities=" + Math.round((scores.find(s => s.id === 12) || {}).pct || 0),
-    "creating=" + Math.round((scores.find(s => s.id === 13) || {}).pct || 0),
-  ].join("&");
+  const payload = {
+    name,
+    email,
+    areas,
+    temperature,
+    overallScore: Math.round(overallScore),
+    owning: Math.round((scores.find(s => s.id === 1) || {}).pct || 0),
+    aliveness: Math.round((scores.find(s => s.id === 2) || {}).pct || 0),
+    naming: Math.round((scores.find(s => s.id === 3) || {}).pct || 0),
+    lettingGo: Math.round((scores.find(s => s.id === 4) || {}).pct || 0),
+    holdingParadoxes: Math.round((scores.find(s => s.id === 5) || {}).pct || 0),
+    creatingAgreements: Math.round((scores.find(s => s.id === 6) || {}).pct || 0),
+    gettingSupport: Math.round((scores.find(s => s.id === 7) || {}).pct || 0),
+    antifragility: Math.round((scores.find(s => s.id === 8) || {}).pct || 0),
+    playingWithLife: Math.round((scores.find(s => s.id === 9) || {}).pct || 0),
+    commitment: Math.round((scores.find(s => s.id === 10) || {}).pct || 0),
+    askingQuestions: Math.round((scores.find(s => s.id === 11) || {}).pct || 0),
+    seeingPossibilities: Math.round((scores.find(s => s.id === 12) || {}).pct || 0),
+    creating: Math.round((scores.find(s => s.id === 13) || {}).pct || 0),
+  };
   fetch("/api/save", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -276,7 +276,7 @@ export default function App() {
   const [email, setEmail] = useState("");
   const [areas, setAreas] = useState([]);
   const [emailError, setEmailError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+
 
   function toggleArea(area) {
     setAreas(prev =>
@@ -311,7 +311,7 @@ export default function App() {
     subscribeToMailchimp(trimmed);
     const r = computeResults(answers);
     const t = getTemperature(r.overall);
-saveToGoogleSheet(name.trim(), trimmed, (areas || []).join('|'), t.label, r.overall, r.scores);
+    saveToGoogleSheet(name.trim(), trimmed, areas.join('|'), t.label, r.overall, r.scores);
     setPhase("results");
   }
 
@@ -519,7 +519,7 @@ saveToGoogleSheet(name.trim(), trimmed, (areas || []).join('|'), t.label, r.over
           )}
           <button
             onClick={handleEmailSubmit}
-            disabled={false}
+
             onMouseEnter={e => { if (!submitting) e.target.style.background = "#c87840"; }}
             onMouseLeave={e => { if (!submitting) e.target.style.background = "#1a1510"; }}
             style={{
