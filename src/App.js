@@ -33,29 +33,31 @@ function subscribeToMailchimp(email) {
 }
 
 
-function saveToGoogleSheet(email, temperature, overallScore, scores) {
-  const payload = {
-    email,
-    temperature,
-    overallScore: Math.round(overallScore),
-    owning: Math.round((scores.find(s => s.id === 1) || {}).pct || 0),
-    aliveness: Math.round((scores.find(s => s.id === 2) || {}).pct || 0),
-    naming: Math.round((scores.find(s => s.id === 3) || {}).pct || 0),
-    lettingGo: Math.round((scores.find(s => s.id === 4) || {}).pct || 0),
-    holdingParadoxes: Math.round((scores.find(s => s.id === 5) || {}).pct || 0),
-    creatingAgreements: Math.round((scores.find(s => s.id === 6) || {}).pct || 0),
-    gettingSupport: Math.round((scores.find(s => s.id === 7) || {}).pct || 0),
-    antifragility: Math.round((scores.find(s => s.id === 8) || {}).pct || 0),
-    playingWithLife: Math.round((scores.find(s => s.id === 9) || {}).pct || 0),
-    commitment: Math.round((scores.find(s => s.id === 10) || {}).pct || 0),
-    askingQuestions: Math.round((scores.find(s => s.id === 11) || {}).pct || 0),
-    seeingPossibilities: Math.round((scores.find(s => s.id === 12) || {}).pct || 0),
-    creating: Math.round((scores.find(s => s.id === 13) || {}).pct || 0),
-  };
-  fetch("/api/save", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyySbTw8UbewmCgBeOcOVcSG79XTrDrbeMlpr-UP0ejoSOkvsZsRewTjQCTpO9U_mssPA/exec";
+
+function saveToGoogleSheet(name, email, areas, temperature, overallScore, scores) {
+  const params = [
+    "email=" + encodeURIComponent(email),
+    "temperature=" + encodeURIComponent(temperature),
+    "overallScore=" + Math.round(overallScore),
+    "owning=" + Math.round((scores.find(s => s.id === 1) || {}).pct || 0),
+    "aliveness=" + Math.round((scores.find(s => s.id === 2) || {}).pct || 0),
+    "naming=" + Math.round((scores.find(s => s.id === 3) || {}).pct || 0),
+    "lettingGo=" + Math.round((scores.find(s => s.id === 4) || {}).pct || 0),
+    "holdingParadoxes=" + Math.round((scores.find(s => s.id === 5) || {}).pct || 0),
+    "creatingAgreements=" + Math.round((scores.find(s => s.id === 6) || {}).pct || 0),
+    "gettingSupport=" + Math.round((scores.find(s => s.id === 7) || {}).pct || 0),
+    "antifragility=" + Math.round((scores.find(s => s.id === 8) || {}).pct || 0),
+    "playingWithLife=" + Math.round((scores.find(s => s.id === 9) || {}).pct || 0),
+    "commitment=" + Math.round((scores.find(s => s.id === 10) || {}).pct || 0),
+    "askingQuestions=" + Math.round((scores.find(s => s.id === 11) || {}).pct || 0),
+    "seeingPossibilities=" + Math.round((scores.find(s => s.id === 12) || {}).pct || 0),
+    "creating=" + Math.round((scores.find(s => s.id === 13) || {}).pct || 0),
+  ].join("&");
+  fetch(GOOGLE_SHEET_URL + "?" + params, {
+    method: "GET",
+    mode: "no-cors",
+    redirect: "follow",
   }).catch(() => {});
 }
 
@@ -133,13 +135,13 @@ const SCENARIOS = [
   },
   {
     id: 6,
-    situation: "You're in a meeting or a work event. You're saying the right things, acting the right way. But what you actually want to say or do is completely different. You:",
+    situation: "You're in a work-related or a social event. You're being nice and polite, as it's expected of you. But what you actually want to say or do is completely different. You:",
     spectrums: [2, 3, 9],
     options: [
-      { text: "Keep going. You'll be yourself somewhere else.", score: 0 },
+      { text: "Keep being nice. You know you'll survive the event.", score: 0 },
       { text: "Feel something is off but can't quite put your finger on what you'd rather be doing.", score: 1 },
-      { text: "Find one moment to say something real, even if it's small.", score: 4 },
-      { text: "Start calculating how much of your time looks like this.", score: 2 },
+      { text: "Find one moment to say what you really want to say, even if it feels awkward.", score: 4 },
+      { text: "Start calculating how much of your life is gone like this.", score: 2 },
     ],
   },
   {
@@ -270,9 +272,17 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [fading, setFading] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [areas, setAreas] = useState([]);
   const [emailError, setEmailError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  function toggleArea(area) {
+    setAreas(prev =>
+      prev.includes(area) ? prev.filter(a => a !== area) : [...prev, area]
+    );
+  }
 
   function handleSelect(idx) {
     if (!fading) setSelected(idx);
@@ -286,7 +296,7 @@ export default function App() {
     setTimeout(() => {
       setSelected(null);
       if (current + 1 < SCENARIOS.length) setCurrent(c => c + 1);
-      else setPhase("email");
+      else setPhase("areas");
       setFading(false);
     }, 300);
   }
@@ -301,7 +311,7 @@ export default function App() {
     subscribeToMailchimp(trimmed);
     const r = computeResults(answers);
     const t = getTemperature(r.overall);
-    saveToGoogleSheet(trimmed, t.label, r.overall, r.scores);
+    saveToGoogleSheet(name.trim(), trimmed, areas.join('|'), t.label, r.overall, r.scores);
     setPhase("results");
   }
 
@@ -348,6 +358,57 @@ export default function App() {
           >
             Start
           </button>
+        </div>
+      )}
+
+
+      {/* AREA SELECTOR */}
+      {phase === "areas" && (
+        <div style={{ maxWidth: 560, margin: "0 auto", padding: "80px 32px", textAlign: "center" }}>
+          <div style={{ display: "flex", gap: 3, marginBottom: 48 }}>
+            {SCENARIOS.map((_, i) => (
+              <div key={i} style={{ height: 2, flex: 1, background: "#d8d0c8" }} />
+            ))}
+          </div>
+          <div style={{ fontSize: 10, letterSpacing: "0.35em", color: "#9a8f84", textTransform: "uppercase", marginBottom: 24 }}>
+            Before we start
+          </div>
+          <p style={{ fontSize: "clamp(17px, 2.5vw, 20px)", lineHeight: 1.75, color: "#1a1510", marginBottom: 36 }}>
+            Which area is not moving as you wish?
+          </p>
+          <p style={{ fontSize: 13, color: "#9a8f84", marginBottom: 28 }}>You can select more than one.</p>
+          {["Work relationships", "Personal relationships", "Thoughts to action"].map(area => (
+            <button
+              key={area}
+              onClick={() => toggleArea(area)}
+              style={{
+                display: "block", width: "100%", textAlign: "left",
+                background: areas.includes(area) ? "#1a1510" : "transparent",
+                border: `1px solid ${areas.includes(area) ? "#1a1510" : "#c8bfb4"}`,
+                color: areas.includes(area) ? "#f5f0eb" : "#4a3f34",
+                padding: "17px 20px", marginBottom: 10, cursor: "pointer",
+                fontSize: 15, lineHeight: 1.65,
+                fontFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
+                transition: "all 0.15s", borderRadius: 1,
+              }}
+            >
+              {area}
+            </button>
+          ))}
+          <div style={{ textAlign: "right", marginTop: 24 }}>
+            <button
+              onClick={() => setPhase("questions")}
+              style={{
+                background: areas.length > 0 ? "#c87840" : "#d8d0c8",
+                border: "none", color: areas.length > 0 ? "#fff" : "#9a8f84",
+                padding: "14px 36px", fontSize: 11, letterSpacing: "0.25em",
+                textTransform: "uppercase", cursor: areas.length > 0 ? "pointer" : "not-allowed",
+                fontFamily: "'Georgia', serif", transition: "all 0.2s",
+              }}
+            >
+              Start
+            </button>
+          </div>
         </div>
       )}
 
@@ -414,6 +475,25 @@ export default function App() {
           <p style={{ fontSize: 15, lineHeight: 1.8, color: "#6a5f54", marginBottom: 40 }}>
             Enter your email and I'll also send you a video explaining what your results mean.
           </p>
+          <input
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "16px 20px",
+              fontSize: 15,
+              fontFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
+              border: "1px solid #c8bfb4",
+              background: "transparent",
+              color: "#1a1510",
+              marginBottom: 10,
+              boxSizing: "border-box",
+              outline: "none",
+              borderRadius: 1,
+            }}
+          />
           <input
             type="email"
             placeholder="your@email.com"
