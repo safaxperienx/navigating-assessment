@@ -562,7 +562,7 @@ export default function App() {
               <span>Reactive</span><span>Creative</span>
             </div>
             <div style={{ height: 5, background: "#d8d0c8", borderRadius: 3, overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${results.overall}%`, background: `linear-gradient(90deg, #4a90c4, ${temp.color})`, borderRadius: 3 }} />
+              <div style={{ height: "100%", width: `${Math.max(results.overall, 4)}%`, background: `linear-gradient(90deg, #4a90c4, ${temp.color})`, borderRadius: 3 }} />
             </div>
           </div>
 
@@ -573,7 +573,7 @@ export default function App() {
                 <div key={s.id} style={{ marginBottom: 16 }}>
                   <div style={{ fontSize: 13, color: "#1a1510", marginBottom: 5, fontStyle: "italic" }}>{s.left} → {s.right}</div>
                   <div style={{ height: 3, background: "#d8d0c8", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${s.pct}%`, background: "#4a90c4", borderRadius: 2 }} />
+                    <div style={{ height: "100%", width: `${Math.max(s.pct, 4)}%`, background: "#4a90c4", borderRadius: 2 }} />
                   </div>
                 </div>
               ))}
@@ -584,7 +584,7 @@ export default function App() {
                 <div key={s.id} style={{ marginBottom: 16 }}>
                   <div style={{ fontSize: 13, color: "#1a1510", marginBottom: 5, fontStyle: "italic" }}>{s.left} → {s.right}</div>
                   <div style={{ height: 3, background: "#d8d0c8", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${s.pct}%`, background: "#e06020", borderRadius: 2 }} />
+                    <div style={{ height: "100%", width: `${Math.max(s.pct, 4)}%`, background: "#e06020", borderRadius: 2 }} />
                   </div>
                 </div>
               ))}
@@ -608,7 +608,7 @@ export default function App() {
                     <span>{s.left}</span><span>{s.right}</span>
                   </div>
                   <div style={{ height: 4, background: "#d8d0c8", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${s.pct}%`, background: getBarColor(s.pct), borderRadius: 2, transition: "width 0.8s ease" }} />
+                    <div style={{ height: "100%", width: `${Math.max(s.pct, 4)}%`, background: getBarColor(s.pct), borderRadius: 2, transition: "width 0.8s ease" }} />
                   </div>
                 </div>
               ))}
