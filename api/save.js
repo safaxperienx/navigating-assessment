@@ -11,9 +11,13 @@ export default async function handler(req, res) {
 
   try {
     const data = req.body;
-    const params = new URLSearchParams(data).toString();
+    const params = Object.keys(data)
+      .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+      .join("&");
     
-    const response = await fetch(GOOGLE_SHEET_URL + "?" + params, {
+    const url = GOOGLE_SHEET_URL + "?" + params;
+    
+    const response = await fetch(url, {
       method: "GET",
       redirect: "follow",
     });
