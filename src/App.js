@@ -296,7 +296,7 @@ export default function App() {
     setTimeout(() => {
       setSelected(null);
       if (current + 1 < SCENARIOS.length) setCurrent(c => c + 1);
-      else setPhase("areas");
+      else setPhase("email");
       setFading(false);
     }, 300);
   }
@@ -351,7 +351,7 @@ export default function App() {
             Pick the answer that feels most true —<br />not the one you wish were true.
           </p>
           <button
-            onClick={() => setPhase("questions")}
+            onClick={() => setPhase("areas")}
             onMouseEnter={e => e.target.style.background = "#c87840"}
             onMouseLeave={e => e.target.style.background = "#1a1510"}
             style={{ background: "#1a1510", border: "none", color: "#f5f0eb", padding: "18px 52px", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", cursor: "pointer", fontFamily: "'Georgia', serif", transition: "background 0.2s" }}
