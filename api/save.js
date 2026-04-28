@@ -1,3 +1,11 @@
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+};
+
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -11,12 +19,17 @@ export default async function handler(req, res) {
 
   try {
     const data = req.body;
+    
+    if (!data || typeof data !== "object") {
+      return res.status(400).json({ success: false, error: "No data received" });
+    }
+
     const params = Object.keys(data)
       .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
       .join("&");
-    
+
     const url = GOOGLE_SHEET_URL + "?" + params;
-    
+
     const response = await fetch(url, {
       method: "GET",
       redirect: "follow",
